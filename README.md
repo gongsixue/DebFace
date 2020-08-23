@@ -1,13 +1,31 @@
-# How to use it?
-It is easy to be customized to fulfill your own demands. All you need to do is to create the necessary classes which I list below:
- 1. **Data Loader**: defines how you load your training and testing data.
- For your information, I put some data loaders I often use in the "datasets" folder, such as "folderlist.py" (loading images in a given folder), "filelist.py" (loading images in a file list written in a text file), "triplet.py" (loading images as triplets), and so on.
- 2. **Network Architecture**: uses a nn.Module class to define your neural network.
- I put some well-kown networks in face recognition domain in the "models" folder, such as "resnet.py" (ResNet), "preactresnet.py" (PreAct-ResNet), and "sphereface.py" (SphereFace).
- 3. **Loss Method**: Pytorch provides some comman loss functions in torch.nn library, for example CrossEntropyLoss or MSELoss. And you can also design your own loss function by using a nn.Module class, which is similary to writting a network architecture.
- Still, there are some loss functions I wrote for face recognition and shoe image retrieval, that can be found in "losses" folder.
- 4. **Evaluation Metric**: a class to measure the accuracy (performance) of your network model, i.e., how to test your network.
- Again, I show examples in the "evaluate" folder.
+# *DebFace*: Jointly De-biasing Face Recognition and Demographic Attribute Estimation
+
+By Sixue Gong, Xiaoming Liu, and Anil K. Jain
+
+## Contents
+0. [Introduction](#introduction)
+0. [Citation](#citation)
+0. [Requirements](#requirements)
+0. [Usage](#usage)
+
+### Introduction
+
+This code archive includes the Python implementation of disentangling face identity and demographic attributes. Our work, *DebFace*, addressed the problem of bias in automated face recognition and demographic attribute estimation algorithms, where errors are lower on certain cohorts belonging to specific demographic groups. The proposed "DebFace" is able to extract disentangled feature representations for both face recognition and demographic estimation, so as to abate bias influence from other factors.
+
+### Citation
+
+If you think **DebFace** is useful to your research, please cite:
+
+  @inproceedings{gong2020jointly,
+   title={Jointly de-biasing face recognition and demographic attribute estimation},
+   author={Gong, Sixue and Liu, Xiaoming and Jain, A},
+   year={2020},
+   organization={ECCV}
+  }
+
+**Link** to the paper: http://www.ecva.net/papers/eccv_2020/papers_ECCV/papers/123740324.pdf
+
+### Usage
 
 ## More remarks
 Apart from the four major classes I just mensioned before, you may need to edit the belowing files as well, to make the whole program work. All these files are in the root folder.
