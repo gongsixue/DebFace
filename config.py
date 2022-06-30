@@ -4,7 +4,7 @@ import imp
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_file', 
-        type=str, default='./args.py',
+        type=str, default='args.py',
         help="The path to the configuration file")
     args = parser.parse_args()
 

@@ -9,10 +9,10 @@ same_env = True
 # ======================== Main Setings ====================================
 log_type = 'traditional'
 train = 'face_cls'
-save_results = False
+save_results = True
 result_path = '/research/prip-gongsixu/codes/biasface/results/models/face_demog'
-extract_feat = True
-just_test = False
+extract_feat = False
+just_test = True
 feat_savepath = '/research/prip-gongsixu/codes/biasface/results/features/feat_debface_subfig.npz'
 # resume = None
 # resume = '/research/prip-gongsixu/results/models/teacher/sphere20a_20171020.pth'
@@ -50,27 +50,32 @@ preprocess_test = {"Resize": True,
 loader_input = 'loader_image'
 loader_label = 'loader_numpy'
 
+# dataset_train = 'AFAD'
 # dataset_train = 'AgeCSVListLoader'
 # dataset_train = 'AgeBinaryLoader'
 # dataset_train = 'ClassSamplesDataLoader'
 # input_filename_train = '/research/prip-gongsixu/results/feats/evaluation/list_lfwblufr.txt'
-input_filename_train = ['/scratch/gongsixue/msceleb_AlignedAsArcface_images.hdf5',\
-    '/research/prip-gongsixu/codes/biasface/datasets/list_msceleb_demog.csv']
+# input_filename_train = ['/scratch/gongsixue/msceleb_AlignedAsArcface_images.hdf5',\
+#     '/research/prip-gongsixu/codes/biasface/datasets/list_msceleb_demog.csv']
+
+input_filename_train = 'datasets/AFAD/afad_train.csv'
 label_filename_train = None
 # dataset_train = 'FileListLoader'
-dataset_train = 'H5pyCSVLoader'
+# dataset_train = 'H5pyCSVLoader'
+dataset_train = 'GenderCSVListLoader'
 dataset_options_train = {'ifile':input_filename_train, 'root':dataset_root_train,
                  'transform':preprocess_train, 'loader':loader_input}
 # dataset_options_train = {'root':dataset_root_train, 'ifile':input_filename_train,
 #                  'num_images':10, 'transform':preprocess_test, 'loader':loader_input,\
 #                  'train_type':train}
 
-dataset_test = 'CSVListLoader'
+dataset_test = 'GenderCSVListLoader'
 # dataset_test = 'AgeBinaryLoader'
+# dataset_test = 'AFAD'
 # dataset_test = 'FileListLoader'
 # input_filename_test = '/research/prip-gongsixu/datasets/LFW/list_lfw_aligned_retina_112.txt'
 # input_filename_test = '/research/prip-gongsixu/datasets/IJBA/list_ijba_aligned.txt'
-input_filename_test = '../datasets/list_face_demog_groups_subfig.csv'
+input_filename_test = 'datasets/AFAD/afad_test.csv'
 # input_filename_test = '../datasets/list_face_demog_groups_eccv2020.csv'
 # input_filename_test = '/user/pripshare/Databases/FaceDatabasesPublic/CACD/CACDVS_AlignAsSphereface/cacdvs_aligned.txt'
 label_filename_test = None
