@@ -127,3 +127,6 @@ class Dataloader:
                     shuffle=False,pin_memory=True
                 )
                 return dataloader
+
+    def __str__(self) -> str:
+        return str(self.args) + '\n' + str(self.resolution) + '\n' + str(self.input_size)

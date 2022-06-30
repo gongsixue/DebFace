@@ -22,11 +22,12 @@ if args.train == 'rfw':
     from train_RFW import Trainer
 
 if args.dataset_train == 'ClassSamplesDataLoader':
-    from train_classload import Trainer
+    from train_cls import Trainer
 
 
 def main():
     # parse the arguments
+    # print(help(args))
     random.seed(args.manual_seed)
     torch.manual_seed(args.manual_seed)
     if args.save_results:
@@ -49,11 +50,9 @@ def main():
     tester = Tester(args, model, model_dict['loss'], evaluation)
 
     test_freq = 1
-
     dataloader = Dataloader(args)
-
     if args.extract_feat:
-        loaders  = dataloader.create(flag='Test')
+        loaders  = dataloader.create()
         tester.extract_features(loaders)
         # tester.extract_features_h5py(loaders, len(dataloader.dataset_test))
     elif args.just_test:
