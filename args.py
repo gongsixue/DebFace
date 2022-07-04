@@ -58,7 +58,9 @@ loader_label = 'loader_numpy'
 # input_filename_train = ['/scratch/gongsixue/msceleb_AlignedAsArcface_images.hdf5',\
 #     '/research/prip-gongsixu/codes/biasface/datasets/list_msceleb_demog.csv']
 
-input_filename_train = 'datasets/AFAD/afad_train.csv'
+# input_filename_train = 'datasets/AFAD/afad_train.csv'
+input_filename_train = 'datasets/AFAD/afad_train(small).csv'
+
 label_filename_train = None
 # dataset_train = 'FileListLoader'
 # dataset_train = 'H5pyCSVLoader'
@@ -75,7 +77,8 @@ dataset_test = 'GenderCSVListLoader'
 # dataset_test = 'FileListLoader'
 # input_filename_test = '/research/prip-gongsixu/datasets/LFW/list_lfw_aligned_retina_112.txt'
 # input_filename_test = '/research/prip-gongsixu/datasets/IJBA/list_ijba_aligned.txt'
-input_filename_test = 'datasets/AFAD/afad_test.csv'
+# input_filename_test = 'datasets/AFAD/afad_test.csv'
+input_filename_test = 'datasets/AFAD/afad_test(small).csv'
 # input_filename_test = '../datasets/list_face_demog_groups_eccv2020.csv'
 # input_filename_test = '/user/pripshare/Databases/FaceDatabasesPublic/CACD/CACDVS_AlignAsSphereface/cacdvs_aligned.txt'
 label_filename_test = None
@@ -135,6 +138,7 @@ resolution_wide = 112
 # initialization
 manual_seed = 0
 nepochs = 300
+test_epochs = 10
 epoch_number = 0
 
 # batch
@@ -163,6 +167,7 @@ label_filename = input_filename_test
 
 # protocol and metric
 protocol = 'BLUFR'
+# protocol = 'LFW'
 metric = 'cosine'
 
 # files related to protocols
