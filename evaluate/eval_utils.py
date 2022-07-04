@@ -1,4 +1,5 @@
 import os
+from sympy import E
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -148,8 +149,8 @@ def get_labels_from_txt(filename):
     return labels
 
 def get_pairwise_score_label(score_mat, label):
-    n = label.size
-    assert score_mat.shape[0]==score_mat.shape[1]==n
+    n = label.size 
+    # assert score_mat.shape[0]==score_mat.shape[1]==n
     triu_indices = np.triu_indices(n, 1)
     if len(label.shape)==1:
         label = label[:, None]
