@@ -134,7 +134,12 @@ def get_pair_and_label_rfw(pairfiles, index_dict, race):
 def get_labels_from_txt(filename):
     with open(filename,'r') as f:
         lines = f.readlines()
-        class_sorted = [x.split('\t')[0].split('/')[-2] for x in lines]
+        # class_sorted = [x.split('\t')[0].split('/')[-2] for x in lines]
+        class_sorted = [x.split('\t')[0].split('/')[-2] for x in lines if len(x) == 3]
+        # class_sorted = [x[0].split(',') for x in lines if len(x) == 3]
+        # class_sorted = [x.split('.') for x in lines]
+        for i in class_sorted:
+            if len(i) != 3: print(i)
         classname = []
         classname[:] = class_sorted[:]
         class_sorted.sort()
