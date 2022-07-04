@@ -10,15 +10,15 @@ same_env = True
 log_type = 'traditional'
 train = 'face_cls'
 save_results = True
-result_path = '/research/prip-gongsixu/codes/biasface/results/models/face_demog'
+result_path = 'research/prip-gongsixu/codes/biasface/results/models/face_demog'
 extract_feat = False
 just_test = True
-feat_savepath = '/research/prip-gongsixu/codes/biasface/results/features/feat_debface_subfig.npz'
+feat_savepath = 'research/prip-gongsixu/codes/biasface/results/features/feat_debface_subfig.npz'
 # resume = None
 # resume = '/research/prip-gongsixu/results/models/teacher/sphere20a_20171020.pth'
 # resume = '/research/prip-gongsixu/results/models/teacher/facenet_vgg2.pth'
 # resume = '/scratch/gongsixue/face_resolution/models/model_ir_se50.pth'
-resume = '/research/prip-gongsixu/codes/biasface/results/models/debface/Save'
+resume = 'research/prip-gongsixu/codes/biasface/results/models/debface/Save'
 # ======================== Main Setings ====================================
 
 # ======================= Data Setings =====================================
