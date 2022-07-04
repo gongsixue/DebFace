@@ -29,8 +29,9 @@ class CSVListLoader(data.Dataset):
             with open(ifile, 'r') as csvfile: # , encoding='utf-8', errors='ignore'
                 # reader = csv.reader(csvfile, delimiter='\t')
                 lines = csvfile.readlines()
-                reader = [x.rstrip('\n').split('\t') for x in lines]
-                for i,row in enumerate(reader):
+                # reader = [x.rstrip('\n').split('\t') for x in lines]
+                reader = [x.split('\t')[0].split('/')[-2] for x in lines if len(x) == 3]
+                for _,row in enumerate(reader):
                     if self.nattributes <= len(row):
                         self.nattributes = len(row)
                     if 'NaN' in row:
@@ -38,6 +39,7 @@ class CSVListLoader(data.Dataset):
                         for j in idx:
                             row[j] = -1
                     datalist.append(row)
+                    
                     ############## ID!!!! ##############
                     classname.append(row[4]) # ID!
                     ############## ID!!!! ##############

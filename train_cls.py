@@ -130,7 +130,8 @@ class Trainer:
 
         stored_models = {}
 
-        for i, (inputs, idlabels, genderlabels, agelabels, racelabels, fmetas) in enumerate(dataloader):
+        # for i, (inputs, idlabels, genderlabels, agelabels, racelabels, fmetas) in enumerate(dataloader):
+        for i, (inputs, idlabels, genderlabels, fmetas) in enumerate(dataloader):
             # keeps track of data loading time
             data_time = time.time() - end
 
@@ -141,17 +142,18 @@ class Trainer:
             batch_size = inputs.size(0)
             batch_idx = list(range(batch_size))
 
-            self.inputs.data.resize_(inputs.size()).copy_(inputs)
-            self.labels.data.resize_(idlabels.size()).copy_(idlabels)
-            self.labels = self.labels.view(-1)
+            with torch.no_grad():
+                self.inputs.resize_(inputs.size()).copy_(inputs)
+                self.labels.resize_(idlabels.size()).copy_(idlabels)
+                self.labels = self.labels.view(-1)
 
             if self.args.cuda:
                 genderlabels = genderlabels.cuda()
-                agelabels = agelabels.cuda()
-                racelabels = racelabels.cuda()
+                # agelabels = agelabels.cuda()
+                # racelabels = racelabels.cuda()
             genderlabels = Variable(genderlabels)
-            agelabels = Variable(agelabels)
-            racelabels = Variable(racelabels)
+            # agelabels = Variable(agelabels)
+            # racelabels = Variable(racelabels)
 
             outputs = self.model['feat'](self.inputs)
 
@@ -161,9 +163,10 @@ class Trainer:
             for key in keys:
                 permute_idx[key] = random.sample(batch_idx, batch_size)
             permute_outputs = torch.cat((outputs[permute_idx['gender'],0:512],
-                outputs[permute_idx['age'],512:2*512],
-                outputs[permute_idx['race'],2*512:3*512],
-                outputs[permute_idx['id'],3*512:4*512]), dim=1)
+                # outputs[permute_idx['age'],512:2*512],
+                # outputs[permute_idx['race'],2*512:3*512],
+                # outputs[permute_idx['id'],3*512:4*512]), dim=1)
+                outputs[permute_idx['id'],512:4*512]), dim=1)
             inputs_discrim = torch.cat((outputs, permute_outputs), dim=0)
             outputs_discrim = self.model['discrim'](inputs_discrim)
 
@@ -173,51 +176,63 @@ class Trainer:
             labels_discrim = Variable(labels_discrim)
             ########### adversarial training for discriminator to reduce MI #################
 
-            loss_cls_demog = self.criterion['gender'](outputs[:,0:512], genderlabels)[1] \
-                + self.criterion['age'](outputs[:,512:2*512], agelabels)[1] \
-                + self.criterion['race'](outputs[:,2*512:3*512], racelabels)[1]
-            loss_cls_id =  self.criterion['id'](outputs[:,3*512:4*512], self.labels)[1]
+            # loss_cls_demog = self.criterion['gender'](outputs[:,0:512], genderlabels)[1]
+            loss_cls_demog = self.criterion['gender'](outputs[:,0:512], genderlabels)[1]
+                # + self.criterion['age'](outputs[:,512:2*512], agelabels)[1] \
+                # + self.criterion['race'](outputs[:,2*512:3*512], racelabels)[1]
+            # loss_cls_id =  self.criterion['id'](outputs[:,3*512:4*512], self.labels)[1]
+            loss_cls_id =  self.criterion['id'](outputs[:,512:2*512], self.labels)[1]
             loss_cls_mi = self.criterion['mi'](outputs_discrim, labels_discrim)
+            print(loss_cls_mi)
             loss1 = loss_cls_demog + loss_cls_id + loss_cls_mi
 
             conflabels_id = 1.0/85742.0*torch.ones(batch_size, 85742)
             conflabels_gender = 0.5*torch.ones(batch_size, 2)
-            conflabels_age = 1.0/6.0*torch.ones(batch_size, 6)
-            conflabels_race = 0.25*torch.ones(batch_size, 4)
+            # conflabels_age = 1.0/6.0*torch.ones(batch_size, 6)
+            # conflabels_race = 0.25*torch.ones(batch_size, 4)
             if self.args.cuda:
                 conflabels_id = conflabels_id.cuda()
                 conflabels_gender = conflabels_gender.cuda()
-                conflabels_age = conflabels_age.cuda()
-                conflabels_race = conflabels_race.cuda()
+                # conflabels_age = conflabels_age.cuda()
+                # conflabels_race = conflabels_race.cuda()
             conflabels_id = Variable(conflabels_id)
             conflabels_gender = Variable(conflabels_gender)
-            conflabels_age = Variable(conflabels_age)
-            conflabels_race = Variable(conflabels_race)
-            loss_conf_demog = self.criterion['conf'](self.criterion['age'](outputs[:,0:512],agelabels)[0],
-                conflabels_age) + \
-                self.criterion['conf'](self.criterion['race'](outputs[:,0:512],racelabels)[0],
-                conflabels_race) + \
-                self.criterion['conf'](self.criterion['id'](outputs[:,0:512],self.labels)[0], # gender confusion
+            # conflabels_age = Variable(conflabels_age)
+            # conflabels_race = Variable(conflabels_race)
+            # loss_conf_demog = self.criterion['conf'](self.criterion['age'](outputs[:,0:512],agelabels)[0],
+            #     conflabels_age) + \
+            #     self.criterion['conf'](self.criterion['race'](outputs[:,0:512],racelabels)[0],
+            #     conflabels_race) + \
+            #     self.criterion['conf'](self.criterion['id'](outputs[:,0:512],self.labels)[0], # gender confusion
+            #     conflabels_id) + \
+            #     self.criterion['conf'](self.criterion['gender'](outputs[:,512:2*512],genderlabels)[0], 
+            #     conflabels_gender) + \
+            #     self.criterion['conf'](self.criterion['race'](outputs[:,512:2*512],racelabels)[0],
+            #     conflabels_race) + \
+            #     self.criterion['conf'](self.criterion['id'](outputs[:,512:2*512],self.labels)[0], # age confusion
+            #     conflabels_id) + \
+            #     self.criterion['conf'](self.criterion['gender'](outputs[:,2*512:3*512],genderlabels)[0], 
+            #     conflabels_gender) + \
+            #     self.criterion['conf'](self.criterion['age'](outputs[:,2*512:3*512],agelabels)[0], 
+            #     conflabels_age) + \
+            #     self.criterion['conf'](self.criterion['id'](outputs[:,2*512:3*512],self.labels)[0],  # race confusion
+            #     conflabels_id)
+
+            # loss_conf_id = self.criterion['conf'](self.criterion['gender'](outputs[:,3*512:4*512],genderlabels)[0], 
+            #     conflabels_gender) + \
+            #     self.criterion['conf'](self.criterion['age'](outputs[:,3*512:4*512],agelabels)[0], 
+            #     conflabels_age) + \
+            #     self.criterion['conf'](self.criterion['race'](outputs[:,3*512:4*512],racelabels)[0], 
+            #     conflabels_race)
+
+            loss_conf_demog = self.criterion['conf'](self.criterion['id'](outputs[:,0:512],self.labels)[0], # gender confusion
                 conflabels_id) + \
                 self.criterion['conf'](self.criterion['gender'](outputs[:,512:2*512],genderlabels)[0], 
-                conflabels_gender) + \
-                self.criterion['conf'](self.criterion['race'](outputs[:,512:2*512],racelabels)[0],
-                conflabels_race) + \
-                self.criterion['conf'](self.criterion['id'](outputs[:,512:2*512],self.labels)[0], # age confusion
-                conflabels_id) + \
-                self.criterion['conf'](self.criterion['gender'](outputs[:,2*512:3*512],genderlabels)[0], 
-                conflabels_gender) + \
-                self.criterion['conf'](self.criterion['age'](outputs[:,2*512:3*512],agelabels)[0], 
-                conflabels_age) + \
-                self.criterion['conf'](self.criterion['id'](outputs[:,2*512:3*512],self.labels)[0],  # race confusion
-                conflabels_id)
+                conflabels_gender)
 
             loss_conf_id = self.criterion['conf'](self.criterion['gender'](outputs[:,3*512:4*512],genderlabels)[0], 
-                conflabels_gender) + \
-                self.criterion['conf'](self.criterion['age'](outputs[:,3*512:4*512],agelabels)[0], 
-                conflabels_age) + \
-                self.criterion['conf'](self.criterion['race'](outputs[:,3*512:4*512],racelabels)[0], 
-                conflabels_race)
+                conflabels_gender) 
+
             loss_conf_mi = self.criterion['conf'](outputs_discrim, torch.cat((conflabels_gender,
                 conflabels_gender), dim=0))
             loss2 = loss_conf_demog + loss_conf_id + loss_conf_mi
@@ -227,7 +242,7 @@ class Trainer:
             
             loss1.backward(retain_graph=True)
             self.optimizer_cls.step()
-
+            
             loss2.backward()
             self.optimizer_cnn.step()
 

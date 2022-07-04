@@ -40,7 +40,8 @@ class Softmax(nn.Module):
         self.loss = nn.CrossEntropyLoss()
 
     def forward(self, inputs, targets):
-        targets = targets.long()
+        # targets = targets.long()
+        targets = targets.float()
         y = self.fc(inputs)
         loss = self.loss(y, targets)
         return [y,loss]
