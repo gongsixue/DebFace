@@ -32,7 +32,12 @@ class Logger:
             return
         tmpstr = ''
         for tmp in modules:
-            tmpstr = tmpstr + '%.6f' % (modules[tmp]) + '\t'
+            # if tmp == 'ACC':
+            #     continue
+            try:
+                tmpstr = tmpstr + '%.6f' % (float(tmp)) + '\t'
+            except:
+                continue
         tmpstr = tmpstr + '\n'
         self.fid = open(self.filename, 'a')
         self.fid.write(tmpstr)
