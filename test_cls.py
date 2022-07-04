@@ -84,6 +84,7 @@ class Tester:
 
     def test(self, epoch, dataloader):
         dataloader = dataloader['test']
+        batch = dataloader.batch_size
         self.monitor.reset()
         torch.cuda.empty_cache()
 
@@ -95,7 +96,6 @@ class Tester:
         features = []
         labels = []
 
-
         # extract query features
         for i, (inputs,input_labels,attrs,fmetas) in enumerate(dataloader):
             # keeps track of data loading time
@@ -105,9 +105,9 @@ class Tester:
             ############################
             # Evaluate Network
             ############################
-
-            self.inputs.data.resize_(inputs.size()).copy_(inputs)
-            self.labels.data.resize_(input_labels.size()).copy_(input_labels)
+            with torch.no_grad():
+                self.inputs.resize_(inputs.size()).copy_(inputs)
+                self.labels.resize_(input_labels.size()).copy_(input_labels)
 
             embeddings = self.model['feat'](self.inputs)
 
@@ -118,18 +118,44 @@ class Tester:
 
             torch.sum(embeddings).backward()
 
+        # for i, (inputs,input_labels,attrs,fmetas) in enumerate(dataloader):
+        #     if i == 1:
+        #         break
+        #     # keeps track of data loading time
+        #     inputs = inputs[epoch:batch]
+        #     input_labels = input_labels[epoch:batch]
+        #     data_time = time.time() - end
+        #     end = time.time()
+
+        #     ############################
+        #     # Evaluate Network
+        #     ############################
+        #     with torch.no_grad():
+        #         self.inputs.resize_(inputs.size()).copy_(inputs)
+        #         self.labels.resize_(input_labels.size()).copy_(input_labels)
+
+        #     embeddings = self.model['feat'](self.inputs)
+
+        #     feat_time = time.time() - end
+            
+        #     features.append(embeddings[:,1*512:2*512].data.cpu().numpy())
+        #     labels.append(input_labels.data.numpy())
+
+        #     torch.sum(embeddings).backward()
+
         labels = np.concatenate(labels, axis=0)
         features = np.concatenate(features, axis=0)
-        results,_,_ = self.evaluation(features)
-        
+        results,_,_ = self.evaluation(features, labels)
         self.losses['ACC'] = results
         batch_size = 1
         self.monitor.update(self.losses, batch_size)
 
         # print batch progress
-        print(self.print_formatter % tuple(
-            [epoch + 1, self.nepochs] +
-            [results]))
+        # print(self.print_formatter % tuple(
+        #     [epoch + 1, self.nepochs] +
+        #     [results]))
+        # print(f"Epoch: {epoch+1}\nResults:{results}")
+        print(f"Epoch: {epoch+1}\n")
             
         # update the log file
         loss = self.monitor.getvalues()
@@ -154,7 +180,10 @@ class Tester:
         labels = []
         for i, (inputs, input_labels, attrs, fmetas) in enumerate(dataloader):
 
-            self.inputs.data.resize_(inputs.size()).copy_(inputs)
+            # print(inputs, input_labels, attrs, fmetas)
+            with torch.no_grad():
+                self.inputs.resize_(inputs.size()).copy_(inputs)
+                # self.inputs.data.resize_(inputs.size()).copy_(inputs)
 
             self.model['feat'].zero_grad()
             embeddings = self.model['feat'](self.inputs)
