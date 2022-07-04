@@ -65,6 +65,9 @@ class Model:
             pass
             # model.apply(weights_init)
         else:
-            model_dict = checkpoints.load(model_dict, checkpoints.latest('resume'))
+            try:
+                model_dict = checkpoints.load(model_dict, checkpoints.latest('resume'))
+            except:
+                pass 
 
         return nets, model_dict, evaluation
