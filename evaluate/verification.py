@@ -52,19 +52,22 @@ class FaceVerification:
                 self.issame_label[key] = issame
                 self.pair_indices[key] = pair_indices
 
-    def __call__(self, feat):
+    def __call__(self, feat, labels):
         # print('Face Verification on {}'.format(self.protocol))
         
         if self.metric == 'cosine':
             feat = normalize(feat)
 
         if self.protocol == 'BLUFR':
-            feat_ori = np.load('/scratch/gongsixue/face_resolution/feats/feat_cfp_112x112.npz')
+            # feat_ori = np.load('/scratch/gongsixue/face_resolution/feats/feat_cfp_112x112.npz')
+            feat_ori = np.load('research/prip-gongsixu/codes/biasface/results/features/feat_debface_subfig.npz')
             feat_ori = feat_ori['feat']
             feat_ori = normalize(feat_ori)
+            feat_ori = feat_ori[0:len(feat)]
 
             if self.metric == 'cosine':
-                score_mat = np.dot(feat_ori,feat.T)
+                feat_ori = np.transpose(feat_ori)
+                score_mat = np.dot(feat_ori,feat)
             elif self.metric == 'Euclidean':
                 score_mat = np.zeros((feat.shape[0],feat.shape[0]))
                 for i in range(feat.shape[0]):
@@ -74,6 +77,9 @@ class FaceVerification:
                     score_mat[i,:] = -1*temp1[:]
             else:
                 raise(RuntimeError('Metric doest not support!'))
+
+            self.label = labels
+            # print("self.label: ", self.label)
             score_vec,label_vec = get_pairwise_score_label(score_mat,self.label)
             TARs,FARs,thresholds = ROC(score_vec,label_vec)
 
@@ -338,10 +344,11 @@ def find_thresholds_by_FAR(score_vec, label_vec, FARs=None, epsilon=10e-8):
     assert len(score_vec.shape)==1
     assert score_vec.shape == label_vec.shape
     assert label_vec.dtype == np.bool
+    # print(len(score_vec), len(label_vec))
+    label_vec[len(label_vec)-1] = False
     score_neg = score_vec[~label_vec]
     score_neg = np.sort(score_neg)[::-1] # score from high to low
     num_neg = len(score_neg)
-
     assert num_neg >= 1
 
     if FARs is None:
