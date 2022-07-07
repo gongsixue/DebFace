@@ -57,10 +57,11 @@ def main():
         # tester.extract_features_h5py(loaders, len(dataloader.dataset_test))
     elif args.just_test:
         loaders  = dataloader.create(flag='Test')
-        acc_test = tester.test(args.epoch_number, loaders)
-        print(acc_test)
+        for _ in range(args.test_epochs):
+            acc_test = tester.test(args.epoch_number, loaders)
+            args.epoch_number += 1
+        # acc_test = tester.test(args.epoch_number, loaders)
     else:
-
         loaders  = dataloader.create()
         if args.dataset_train == 'ClassSamplesDataLoader':
             loaders['train'] = dataloader.dataset_train
